@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Our Menu — Kape Ni Lola</title>
+  <meta name="description" content="From Benguet barako to ube lattes — explore the full Kape Ni Lola menu. Coffee, non-coffee drinks, Filipino food, desserts, and daily specials." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* ── MENU PAGE STYLES ── */
+
+    /* Tab bar */
+    .menu-tabs {
+      position: sticky;
+      top: 65px;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 6vw;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .menu-tabs::-webkit-scrollbar { display: none; }
+
+    .menu-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 1rem 1.2rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      border-bottom: 2px solid transparent;
+      transition: all 0.25s;
+      white-space: nowrap;
+      font-family: 'Lato', sans-serif;
+    }
+    .menu-tab:hover { color: var(--text); }
+    .menu-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .menu-tab-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(200,146,42,0.12);
+      color: var(--accent);
+      font-size: 0.65rem;
+      font-weight: 700;
+    }
+
+    /* Menu sections */
+    .menu-section {
+      padding: 5rem 6vw;
+      border-bottom: 1px solid var(--border);
+    }
+    .menu-section:nth-child(even) { background: var(--bg2); }
+    .menu-section:nth-child(odd)  { background: var(--bg); }
+
+    .menu-section-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .menu-section-title {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+    .menu-section-count {
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+    }
+
+    /* Hidden state for filter */
+    .menu-card-wrap { transition: opacity 0.25s, transform 0.25s; }
+    .menu-card-wrap.hidden {
+      display: none;
+    }
+    .menu-section.section-hidden {
+      display: none;
+    }
+
+    /* Special card for daily specials */
+    .specials-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.6rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+    }
+    .specials-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    }
+    .specials-emoji {
+      font-size: 2.2rem;
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: rgba(200,146,42,0.08);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .specials-body { flex: 1; }
+    .specials-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .specials-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 0.8rem;
+    }
+    .specials-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .specials-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .specials-savings {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    /* Allergen banner */
+    .allergen-note {
+      padding: 2rem 6vw;
+      background: rgba(200,146,42,0.06);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .allergen-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(200,146,42,0.12);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .allergen-text {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+    .allergen-text strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Empty state */
+    .filter-empty {
+      display: none;
+      text-align: center;
+      padding: 5rem 6vw;
+      color: var(--muted);
+    }
+    .filter-empty.visible { display: block; }
+    .filter-empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .filter-empty-text { font-size: 0.95rem; }
+  </style>
+  <style>
+    .nav-logo, .footer-brand-name { font-family: 'Dancing Script', cursive !important; }
+    body, p, span, a, li, input, textarea, select, button, label { font-family: 'Lato', sans-serif; }
+    h1, h2, h3, h4, h5, .section-title, .page-hero-title, .menu-card-title,
+    .testimonial-name, .stat-number, .menu-card-price { font-family: 'Cormorant Garamond', serif !important; }
+    .hero-title { font-family: 'Cormorant Garamond', serif !important; letter-spacing: 0.02em; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-logo" style="font-family: 'Dancing Script', cursive; font-size: 1.6rem; letter-spacing: 0.01em;">Kape <span>Ni Lola</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="menu.html" class="active">Menu</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="gallery.html">Gallery</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="reservations.html" class="nav-cta">Reserve</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="index.html">Home</a>
+    <a href="menu.html" class="active">Menu</a>
+    <a href="about.html">About</a>
+    <a href="gallery.html">Gallery</a>
+    <a href="contact.html">Contact</a>
+    <a href="reservations.html" class="mob-cta">Reserve a Table</a>
+  </div>
+
+  <!-- ① PAGE HERO -->
+  <div class="page-hero">
+    <div class="page-hero-bg"></div>
+    <div class="page-hero-content">
+      <h1 class="page-hero-title" style="font-family: 'Cormorant Garamond', serif; letter-spacing: 0.04em;">Our Menu</h1>
+      <p class="page-hero-sub">From Benguet barako to ube lattes — crafted with love and local ingredients.</p>
+    </div>
+  </div>
+
+  <!-- ② MENU NAV TABS -->
+  <div class="menu-tabs" id="menu-tabs" role="tablist">
+    <button class="menu-tab active" data-filter="all" role="tab" aria-selected="true">
+      All
+      <span class="menu-tab-count">28</span>
+    </button>
+    <button class="menu-tab" data-filter="coffee" role="tab">
+      Coffee
+      <span class="menu-tab-count">6</span>
+    </button>
+    <button class="menu-tab" data-filter="non-coffee" role="tab">
+      Non-Coffee
+      <span class="menu-tab-count">5</span>
+    </button>
+    <button class="menu-tab" data-filter="food" role="tab">
+      Food
+      <span class="menu-tab-count">4</span>
+    </button>
+    <button class="menu-tab" data-filter="desserts" role="tab">
+      Desserts
+      <span class="menu-tab-count">4</span>
+    </button>
+    <button class="menu-tab" data-filter="specials" role="tab">
+      Daily Specials
+      <span class="menu-tab-count">3</span>
+    </button>
+  </div>
+
+  <!-- Empty state -->
+  <div class="filter-empty" id="filter-empty">
+    <div class="filter-empty-icon">☕</div>
+    <p class="filter-empty-text">No items found in this category.</p>
+  </div>
+
+  <!-- ③ MENU SECTIONS -->
+
+  <!-- COFFEE -->
+  <section class="menu-section" id="coffee" data-section="coffee">
+    <div class="menu-section-header reveal">
+      <div>
+        <div class="section-label">Hot &amp; Iced</div>
+        <h2 class="menu-section-title">Coffee</h2>
+      </div>
+      <span class="menu-section-count">6 items</span>
+    </div>
+    <div class="grid-auto">
+
+      <div class="menu-card-wrap card reveal" data-cat="coffee">
+        <div class="menu-card-img">☕</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Lola's Barako</div>
+          <p class="menu-card-desc">Bold Benguet barako brewed slow through a pour-over. Deep, earthy, with a rich caramel finish.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱95</span>
+            <span class="tag">Bestseller</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-1" data-cat="coffee">
+        <div class="menu-card-img">☕</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Kapeng Puti</div>
+          <p class="menu-card-desc">White coffee with sweetened condensed milk, served hot or over ice. Creamy and comforting.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱85</span>
+            <span class="tag">Classic</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-2" data-cat="coffee">
+        <div class="menu-card-img">🥛</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Ube Latte</div>
+          <p class="menu-card-desc">A shot of espresso with house-made ube syrup and velvety steamed milk. Beautiful, purple, delicious.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱145</span>
+            <span class="tag">Fan Favorite</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal" data-cat="coffee">
+        <div class="menu-card-img">🧊</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Cold Brew Pandan</div>
+          <p class="menu-card-desc">12-hour slow-steeped cold brew infused overnight with fresh pandan leaves. Smooth and aromatic.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱135</span>
+            <span class="tag">Seasonal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-1" data-cat="coffee">
+        <div class="menu-card-img">☕</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Flat White</div>
+          <p class="menu-card-desc">Double ristretto shots with velvety microfoam milk. Intense, silky, precision-crafted.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱130</span>
+            <span class="tag">Specialty</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-2" data-cat="coffee">
+        <div class="menu-card-img">🍵</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Dirty Matcha</div>
+          <p class="menu-card-desc">Ceremonial-grade matcha base with a bold espresso shot pulled through. For the adventurous palate.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱150</span>
+            <span class="tag">New</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- NON-COFFEE -->
+  <section class="menu-section" id="non-coffee" data-section="non-coffee">
+    <div class="menu-section-header reveal">
+      <div>
+        <div class="section-label">Teas, Smoothies &amp; More</div>
+        <h2 class="menu-section-title">Non-Coffee</h2>
+      </div>
+      <span class="menu-section-count">5 items</span>
+    </div>
+    <div class="grid-auto">
+
+      <div class="menu-card-wrap card reveal" data-cat="non-coffee">
+        <div class="menu-card-img">🍵</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Salabat Latte</div>
+          <p class="menu-card-desc">Fresh ginger tea steeped and frothed with steamed milk and a drizzle of wildflower honey. Soothing.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱110</span>
+            <span class="tag">Caffeine Free</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-1" data-cat="non-coffee">
+        <div class="menu-card-img">🥤</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Buko Pandan Smoothie</div>
+          <p class="menu-card-desc">Fresh young coconut meat and pandan blended together with coconut milk and ice. Tropical and refreshing.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱125</span>
+            <span class="tag">Refreshing</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-2" data-cat="non-coffee">
+        <div class="menu-card-img">🍋</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Calamansi Iced Tea</div>
+          <p class="menu-card-desc">House-brewed black tea chilled and brightened with a squeeze of fresh local calamansi. Tangy and light.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱95</span>
+            <span class="tag">Local</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal" data-cat="non-coffee">
+        <div class="menu-card-img">🍫</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Tsokolate Eh</div>
+          <p class="menu-card-desc">Rich hot chocolate made from native tablea cacao discs, thick and bittersweet. A Batangas classic.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱120</span>
+            <span class="tag">Traditional</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-1" data-cat="non-coffee">
+        <div class="menu-card-img">🍓</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Strawberry Sago</div>
+          <p class="menu-card-desc">Fresh Benguet strawberries muddled over chewy sago pearls in cold fresh milk. Sweet and fun.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱130</span>
+            <span class="tag">Sweet</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOD -->
+  <section class="menu-section" id="food" data-section="food">
+    <div class="menu-section-header reveal">
+      <div>
+        <div class="section-label">Merienda &amp; Meals</div>
+        <h2 class="menu-section-title">Food</h2>
+      </div>
+      <span class="menu-section-count">4 items</span>
+    </div>
+    <div class="grid-auto">
+
+      <div class="menu-card-wrap card reveal" data-cat="food">
+        <div class="menu-card-img">🍞</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Ensaymada Toast</div>
+          <p class="menu-card-desc">Our golden ensaymada, sliced thick and toasted with salted butter and a dusting of muscovado sugar.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱85</span>
+            <span class="tag">Breakfast</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-1" data-cat="food">
+        <div class="menu-card-img">🍳</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Silog Plate</div>
+          <p class="menu-card-desc">Garlic-fried sinangag rice, sunny-side-up egg, and your choice of sweet tocino or tender beef tapa.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱175</span>
+            <span class="tag">Hearty</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-2" data-cat="food">
+        <div class="menu-card-img">🥪</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Pandesal Sandwich</div>
+          <p class="menu-card-desc">Warm pandesal filled with Batangas ham, a fried egg, and fresh kesong puti. A classic done right.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱95</span>
+            <span class="tag">All-Day</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-3" data-cat="food">
+        <div class="menu-card-img">🍜</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Palabok Bowl</div>
+          <p class="menu-card-desc">Thin rice noodles drenched in creamy shrimp broth sauce, topped with tinapa, chicharon, and calamansi.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱185</span>
+            <span class="tag">Filipino</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DESSERTS -->
+  <section class="menu-section" id="desserts" data-section="desserts">
+    <div class="menu-section-header reveal">
+      <div>
+        <div class="section-label">Sweet Endings</div>
+        <h2 class="menu-section-title">Desserts</h2>
+      </div>
+      <span class="menu-section-count">4 items</span>
+    </div>
+    <div class="grid-auto">
+
+      <div class="menu-card-wrap card reveal" data-cat="desserts">
+        <div class="menu-card-img">🍮</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Leche Flan Cheesecake</div>
+          <p class="menu-card-desc">New York-style cheesecake topped with a thick slab of silky caramel leche flan. Our signature dessert.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱165</span>
+            <span class="tag">Signature</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-1" data-cat="desserts">
+        <div class="menu-card-img">🍧</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Halo-Halo Parfait</div>
+          <p class="menu-card-desc">Layered ube ice cream, sweet sago, nata de coco, macapuno, and crunchy pinipig. Fiesta in a glass.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱155</span>
+            <span class="tag">Bestseller</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-2" data-cat="desserts">
+        <div class="menu-card-img">🧇</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Bibingka Waffle</div>
+          <p class="menu-card-desc">Crispy waffle infused with bibingka batter, crowned with soft kesong puti and a drizzle of muscovado.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱140</span>
+            <span class="tag">Unique</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap card reveal reveal-delay-3" data-cat="desserts">
+        <div class="menu-card-img">🎋</div>
+        <div class="menu-card-body">
+          <div class="menu-card-title">Puto Bumbong Cake</div>
+          <p class="menu-card-desc">Purple sticky rice cake inspired by the beloved Christmas street snack, served with grated coconut.</p>
+          <div class="menu-card-footer">
+            <span class="menu-card-price">₱135</span>
+            <span class="tag">Seasonal</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- DAILY SPECIALS -->
+  <section class="menu-section" id="specials" data-section="specials">
+    <div class="menu-section-header reveal">
+      <div>
+        <div class="section-label">Limited Time</div>
+        <h2 class="menu-section-title">Daily Specials</h2>
+      </div>
+      <span class="menu-section-count">3 items</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+
+      <div class="menu-card-wrap specials-card reveal" data-cat="specials">
+        <div class="specials-emoji">🎉</div>
+        <div class="specials-body">
+          <div class="specials-title">Monday Merienda Set</div>
+          <p class="specials-desc">Any hot coffee of your choice paired with our buttery ensaymada toast. Start your week right.</p>
+          <div class="specials-footer">
+            <span class="specials-price">₱150</span>
+            <span class="specials-savings">₱180</span>
+            <span class="tag">Mon Only</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap specials-card reveal reveal-delay-1" data-cat="specials">
+        <div class="specials-emoji">🌅</div>
+        <div class="specials-body">
+          <div class="specials-title">Weekend Brunch Set</div>
+          <p class="specials-desc">Our full silog plate paired with any iced drink from the menu. The ultimate Mindoro morning.</p>
+          <div class="specials-footer">
+            <span class="specials-price">₱220</span>
+            <span class="specials-savings">₱260</span>
+            <span class="tag">Sat &amp; Sun</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="menu-card-wrap specials-card reveal reveal-delay-2" data-cat="specials">
+        <div class="specials-emoji">⏰</div>
+        <div class="specials-body">
+          <div class="specials-title">Happy Hour Special</div>
+          <p class="specials-desc">Every day from 2PM to 5PM, all espresso-based drinks are 20% off. No minimum spend. No reservations needed.</p>
+          <div class="specials-footer">
+            <span class="tag">Daily · 2PM–5PM</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ④ ALLERGEN NOTE -->
+  <div class="allergen-note">
+    <div class="allergen-icon">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+      </svg>
+    </div>
+    <p class="allergen-text">
+      <strong>Allergen Information:</strong> Please inform our staff of any allergies or dietary restrictions before ordering.
+      We use <strong>nuts, dairy, and gluten</strong> in our kitchen. Cross-contamination is possible. Some items are seasonal and may not always be available.
+    </p>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-main">
+      <div>
+        <div class="footer-brand-name" style="font-family: 'Dancing Script', cursive; font-size: 1.8rem;">Kape Ni Lola</div>
+        <p class="footer-brand-desc">A modern Filipino cafe rooted in tradition. Where every cup tells a story worth sharing.</p>
+        <div class="footer-socials">
+          <a href="#" class="footer-social" aria-label="Facebook">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="#" class="footer-social" aria-label="Instagram">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          </a>
+          <a href="#" class="footer-social" aria-label="TikTok">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-col-title">Quick Links</div>
+        <ul class="footer-links-list">
+          <li><a href="index.html">Home</a></li>
+          <li><a href="menu.html">Our Menu</a></li>
+          <li><a href="about.html">Our Story</a></li>
+          <li><a href="gallery.html">Gallery</a></li>
+          <li><a href="reservations.html">Reserve a Table</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Menu</div>
+        <ul class="footer-links-list">
+          <li><a href="menu.html#coffee">Coffee</a></li>
+          <li><a href="menu.html#non-coffee">Non-Coffee</a></li>
+          <li><a href="menu.html#food">Food</a></li>
+          <li><a href="menu.html#desserts">Desserts</a></li>
+          <li><a href="menu.html#specials">Daily Specials</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Visit Us</div>
+        <div class="footer-info-item">
+          <svg class="footer-info-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+          Tabinay Road, Puerto Galera, Oriental Mindoro
+        </div>
+        <div class="footer-info-item">
+          <svg class="footer-info-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Mon–Fri: 7am–9pm · Sat: 7am–10pm
+        </div>
+        <div class="footer-info-item">
+          <svg class="footer-info-icon" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z"/></svg>
+          +63 954 391 3319
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2024 Kape Ni Lola. All rights reserved.</div>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating reserve button (mobile) -->
+  <a href="reservations.html" class="float-btn">Reserve a Table</a>
+
+  <script>
+    // Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+    });
+
+    // Reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    reveals.forEach(r => observer.observe(r));
+
+    // Nav scroll
+    window.addEventListener('scroll', () => {
+      document.querySelector('nav').style.borderBottomColor =
+        window.scrollY > 50 ? 'rgba(200,146,42,0.35)' : 'rgba(200,146,42,0.2)';
+    });
+
+    // ── MENU FILTER ──
+    const tabs = document.querySelectorAll('.menu-tab');
+    const sections = document.querySelectorAll('.menu-section');
+    const cards = document.querySelectorAll('.menu-card-wrap');
+    const filterEmpty = document.getElementById('filter-empty');
+
+    function filterMenu(cat) {
+      if (cat === 'all') {
+        // Show all sections and cards
+        sections.forEach(s => s.classList.remove('section-hidden'));
+        cards.forEach(c => c.classList.remove('hidden'));
+        filterEmpty.classList.remove('visible');
+      } else {
+        // Hide/show sections
+        sections.forEach(s => {
+          if (s.dataset.section === cat) {
+            s.classList.remove('section-hidden');
+          } else {
+            s.classList.add('section-hidden');
+          }
+        });
+        // Show/hide individual cards (within a section; relevant for future mixed layouts)
+        cards.forEach(c => {
+          if (c.dataset.cat === cat) {
+            c.classList.remove('hidden');
+          } else {
+            c.classList.add('hidden');
+          }
+        });
+        filterEmpty.classList.remove('visible');
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        tabs.forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active');
+        tab.setAttribute('aria-selected', 'true');
+        filterMenu(tab.dataset.filter);
+        // Smooth scroll to menu tabs area
+        window.scrollTo({ top: document.getElementById('menu-tabs').offsetTop - 65, behavior: 'smooth' });
+      });
+    });
+
+    // Handle hash-based deep-linking (e.g. menu.html#coffee)
+    function handleHash() {
+      const hash = window.location.hash.replace('#', '');
+      const validCats = ['coffee', 'non-coffee', 'food', 'desserts', 'specials'];
+      if (validCats.includes(hash)) {
+        const matchTab = document.querySelector(`.menu-tab[data-filter="${hash}"]`);
+        if (matchTab) {
+          tabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+          matchTab.classList.add('active');
+          matchTab.setAttribute('aria-selected', 'true');
+          filterMenu(hash);
+          // Give page time to render before scrolling
+          setTimeout(() => {
+            const target = document.getElementById(hash);
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+      }
+    }
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+  </script>
+</body>
+</html>
